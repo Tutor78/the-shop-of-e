@@ -6,16 +6,14 @@ const { Tag, Product, ProductTag, Category } = require('../../models');
 router.get('/', (req, res) => {
   // find all tags
   Tag.findAll({
-    include: [
-      {
-        model: Product,
-        include: [
-          {
-            model: Category
-          }
-        ]
-      }
-    ]
+    include: {
+      model: Product,
+      include: [
+        {
+          model: Category
+        }
+      ]
+    }
   })
   .then(dbTagData => res.json(dbTagData))
   .catch(err => {
@@ -30,16 +28,14 @@ router.get('/:id', (req, res) => {
     where: {
       id: req.params.id
     },
-    include: [
-      {
-        model: Product,
-        include: [
-          {
-            model: Category
-          }
-        ]
-      }
-    ]
+    include: {
+      model: Product,
+      include: [
+        {
+          model: Category
+        }
+      ]
+    }
   })
   .then(dbTagData => {
     if (!dbTagData) {
@@ -49,13 +45,15 @@ router.get('/:id', (req, res) => {
 
     res.json(dbTagData);
   })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json(err);
+  })
 });
 
 router.post('/', (req, res) => {
   // create a new tag
-  Tag.create({
-    tag_name: req.body.tag_name
-  })
+  Tag.create(req.body)
   .then(tag => res.status(200).json(tag))
   .catch(err => {
     console.log(err);
@@ -74,7 +72,7 @@ router.put('/:id', (req, res) => {
   .catch(err => {
     console.log(err);
     res.status(400).json(err);
-  });
+  })
 });
 
 router.delete('/:id', (req, res) => {
